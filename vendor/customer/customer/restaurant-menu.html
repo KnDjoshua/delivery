@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Restaurant Menu</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <header>
+        <button onclick="window.history.back()">← Back</button>
+        <h1 id="restaurantName">Menu</h1>
+    </header>
+
+    <main>
+        <div id="menuContainer"></div>
+        <button onclick="viewCart()">View Cart (3)</button> <!-- Dynamic count -->
+    </main>
+
+    <script src="../js/firebase.js"></script>
+    <script src="../js/db.js"></script>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const vendorId = sessionStorage.getItem('currentVendor');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load restaurant info
+            db.collection("vendors").doc(vendorId).get()
+                .then(doc => {
+                    document.getElementById('restaurantName').textContent = doc.data().name;
+                });
+
+            // Load menu items
+            getVendorMenu(vendorId, (menu) => {
+                const container = document.getElementById('menuContainer');
+
+                menu.forEach(item => {
+                    container.innerHTML += `
+            <div class="menu-item">
+              <h3>${item.name}</h3>
+              <p>${item.description}</p>
+              <p>$${item.price.toFixed(2)}</p>
+              <button onclick="addToCart('${item.id}', '${item.name}', ${item.price})">
+                Add to Cart
+              </button>
+            </div>
+          `;
+                });
+            });
+        });
+
+        function addToCart(itemId, name, price) {
+            cart.push({ itemId, name, price, vendorId });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${name} added to cart!`);
+        }
+
+        function viewCart() {
+            window.location.href = 'cart.html';
+        }
+    </script>
+</body>
+
+</html>
