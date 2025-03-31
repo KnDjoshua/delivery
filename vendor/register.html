@@ -1,0 +1,36 @@
+<form id="vendorRegForm">
+    <h2>Complete Your Restaurant Profile</h2>
+    
+    <label>Restaurant Name</label>
+    <input type="text" id="restaurantName" required>
+    
+    <label>Cuisine Type</label>
+    <input type="text" id="cuisineType" required>
+    
+    <label>Address</label>
+    <textarea id="address" required></textarea>
+    
+    <label>Phone Number</label>
+    <input type="tel" id="phone" required>
+    
+    <button type="submit">Complete Registration</button>
+  </form>
+  
+  <script src="../js/db.js"></script>
+  <script>
+    document.getElementById("vendorRegForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      
+      const vendorData = {
+        name: document.getElementById("restaurantName").value,
+        cuisine: document.getElementById("cuisineType").value,
+        address: document.getElementById("address").value,
+        phone: document.getElementById("phone").value,
+        ownerId: firebase.auth().currentUser.uid, // Link vendor to user
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      
+      // Save to Firestore (next step)
+      registerVendor(vendorData);
+    });
+  </script>
