@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browse Restaurants</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Food Delivery</h1>
+    <button onclick="signOut()">Sign Out</button>
+  </header>
+
+  <main>
+    <div class="filters">
+      <select id="cuisineFilter">
+        <option value="all">All Cuisines</option>
+        <option value="italian">Italian</option>
+        <option value="mexican">Mexican</option>
+        <!-- Add more options -->
+      </select>
+    </div>
+
+    <div id="restaurantsContainer" class="restaurant-grid">
+      <!-- Restaurants will load here dynamically -->
+    </div>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  
+  <!-- App Scripts -->
+  <script src="../js/firebase.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/db.js"></script>
+
+  <script>
+    // Load restaurants when page opens
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRestaurants();
+      
+      // Filter functionality
+      document.getElementById('cuisineFilter').addEventListener('change', (e) => {
+        loadRestaurants(e.target.value);
+      });
+    });
+
+    function loadRestaurants(cuisine = 'all') {
+      getAllVendors((vendors) => {
+        const container = document.getElementById('restaurantsContainer');
+        container.innerHTML = ''; // Clear previous results
+
+        vendors.forEach(vendor => {
+          if (cuisine === 'all' || vendor.cuisine.toLowerCase() === cuisine) {
+            container.innerHTML += `
+              <div class="restaurant-card" onclick="viewMenu('${vendor.id}')">
+                <h3>${vendor.name}</h3>
+                <p>Cuisine: ${vendor.cuisine}</p>
+                <p>📍 ${vendor.address}</p>
+              </div>
+            `;
+          }
+        });
+      });
+    }
+
+    function viewMenu(vendorId) {
+      // Store vendor ID in sessionStorage
+      sessionStorage.setItem('currentVendor', vendorId);
+      window.location.href = 'restaurant-menu.html'; // We'll create this next
+    }
+  </script>
+</body>
+</html>
