@@ -1,0 +1,53 @@
+<!-- vendor/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vendor Dashboard</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="dashboard">
+    <h2>Your Restaurant Dashboard</h2>
+    
+    <div class="stats">
+      <div>Today's Orders: <span id="todayOrders">0</span></div>
+      <div>Total Earnings: $<span id="totalEarnings">0.00</span></div>
+    </div>
+    
+    <div class="actions">
+      <a href="menu-edit.html">Edit Menu</a>
+      <a href="#" onclick="signOut()">Sign Out</a>
+    </div>
+  </div>
+
+  <!-- Firebase and auth scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="../js/firebase.js"></script>
+  <script src="../js/auth.js"></script>
+  
+  <script>
+    // Check auth state when page loads
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        db.collection("users").doc(user.uid).get()
+          .then((doc) => {
+            if (!doc.exists || !doc.data().isVendor) {
+              window.location.href = "/index.html";
+            }
+            loadVendorStats(user.uid);
+          });
+      } else {
+        window.location.href = "/index.html";
+      }
+    });
+    
+    function loadVendorStats(vendorId) {
+      // Placeholder - you'll implement actual data loading here
+      document.getElementById("todayOrders").textContent = "12";
+      document.getElementById("totalEarnings").textContent = "245.50";
+    }
+  </script>
+</body>
+</html>
